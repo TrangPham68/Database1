@@ -984,7 +984,6 @@ VALUES ('sgraefe@yahoo.com', 9, 11);
 INSERT INTO RANKLIST (EMAIL, ARTWORKID, RANKORDER) 
 VALUES ('sgraefe@yahoo.com', 1, 12);
 
-drop view winnerOrder;
 drop view WinnerOrder;
 
 -- WinnerOrder view
@@ -994,6 +993,61 @@ create view WinnerOrder as
         join Participant P on A.winnerEmail = P.email 
         order by winOrder;
 
+-- WinnerOrder Query
+select category, count(winner)
+    from WinnerOrder 
+    group by rollup(category)
+    order by category;
+
+-- create FavoriteArtwork procedure
+-- displays artworkID and # of participants who have it on their ranking list
+create or replace procedure FavoriteArtwork (artworkID IN number) is 
+    num_times number; 
+    begin 
+        select count(email) into num_times
+            from Participant P j
+                join Artwork A on P.email = A.winnerEmail
+            where FavoriteArtwork.artworkID = A.artworkID
+            dbms_output.put_line('Artwork ' || '#' || artworkID || ': ' || 'Selected ' || num_times || 'times.');
+            Exception
+            Wwhen no_data_found then
+                raise_application_error(-20069, 'No artwork with ID:  ' || artworkID);
+
+    end;
+/
+
+-- create OnlyTicketedRanking trigger 
+-- prevents participants without ticket to enter ranking 
+create or replace trigger OnlyTicketedRanking 
+before insert on RankList 
+for each row 
+Declare 
+    temp_email varchar2(40);
+    cursor P1 is 
+        select email
+        from Participant P 
+        where P.email = temp_email and P.hasTicket = 'N';
+Begin 
+    curr_email := :new.email;
+    for rec in P1 loop 
+        if (rec.email = curr_email) then 
+            raise_application_error(-20004, 'Invalid ticket, cannot insert participant');
+    end if; 
+    end loop;
+End;
+/
+
+-- create DeleteWonArtwork trigger 
+create or replace trigger DeleteWonArtwork 
+after delete on RankList
+for each row 
+
+
+
+
+
+
+-- Drafts
 -- create view winOrder as 
 --     select C.artworkID, C.artist, C.title, C.category, W.winner, W.winorder 
 --     from 
@@ -1006,11 +1060,6 @@ create view WinnerOrder as
 --             on C.artworkID = W.artworkID 
 --     order by winOrder;
 
--- WinnerOrder Query
-select category, count(winner)
-    from WinnerOrder 
-    group by rollup(category)
-    order by category;
 
 
 
@@ -1018,22 +1067,3 @@ select category, count(winner)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
--- WinnerOrder Query
-select category, count(winner)
-    from winOrder
-    group by rollup(category)
-    order by category;
-
-    
