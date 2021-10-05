@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="Oracle - @csorcl.cs.wpi.edu" uuid="61083fb2-ef8b-4afa-9ac5-1c333d06f452">
+      <driver-ref>oracle</driver-ref>
+      <synchronize>true</synchronize>
+      <auto-commit>false</auto-commit>
+      <jdbc-driver>oracle.jdbc.OracleDriver</jdbc-driver>
+      <jdbc-url>jdbc:oracle:thin:@//csorcl.cs.wpi.edu:1521/orcl.cs.wpi.edu</jdbc-url>
+    </data-source>
+  </component>
+</project>
